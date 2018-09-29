@@ -147,6 +147,7 @@ namespace qBTConverter
             int posA = Position(ref data, which);
             if (posA == -1)
             {
+                Console.WriteLine("\tNot found " + which);
                 return false;
             }
 
@@ -159,8 +160,15 @@ namespace qBTConverter
             byte[] bPath = Extract(ref data, posC + 1, posC + len + 1);
             string path = Encoding.UTF8.GetString(bPath);
 
+            Console.WriteLine("\tReplacing in " + which + " " + path);
+
             if (!path.Contains(location))
             {
+                if (!path.Contains(replace))
+                {
+                    Console.WriteLine("\t\tSkipped, source path not found");
+                }
+
                 return false;
             }
 
