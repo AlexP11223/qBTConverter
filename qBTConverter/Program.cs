@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,11 @@ namespace qBTConverter
         private readonly string _path;
         private readonly string _sourceBasePath;
         private readonly string _destBasePath;
+        private readonly bool _isVerboseOutput = false;
 
-        public Converter(string path, string sourceBasePath, string destBasePath)
+        public Converter(string path, string sourceBasePath, string destBasePath, bool isVerboseOutput)
         {
+            _isVerboseOutput = isVerboseOutput;
             _path = path.TrimEnd('\\', '/');
             _sourceBasePath = sourceBasePath.TrimEnd('\\', '/');
             _destBasePath = destBasePath.TrimEnd('\\', '/');
@@ -44,6 +47,7 @@ namespace qBTConverter
 
             int filesUpdated = 0;
             int totalOccurences = 0;
+            var skippedFiles = new List<string>();
             foreach (string file in files)
             {
                 Console.WriteLine("Processing \"" + file + "\"...");
@@ -72,9 +76,25 @@ namespace qBTConverter
                     totalOccurences += occurencesReplaced;
                     Console.WriteLine("\tDone, replaced " + occurencesReplaced + " occurences");
                 }
+                else
+                {
+                    skippedFiles.Add(Path.GetFileName(file));
+                }
             }
 
             Console.WriteLine("Updated " + filesUpdated + " files and " + totalOccurences + " total occurences");
+            if (skippedFiles.Any())
+            {
+                VerboseWriteLine("Skipped files: " + String.Join(", ", skippedFiles));
+            }
+        }
+
+        private void VerboseWriteLine(string text)
+        {
+            if (_isVerboseOutput)
+            {
+                Console.WriteLine(text);
+            }
         }
 
         private bool Match(ref byte[] data, ref byte[] search, int dataIndex)
@@ -188,11 +208,11 @@ namespace qBTConverter
         {
             if (args.Length < 3)
             {
-                Console.WriteLine("Usage: qBTConverter <path> <windows base directory> <linux base directory>");
+                Console.WriteLine("Usage: qBTConverter <path> <windows base directory> <linux base directory> [--verbose]");
                 return;
             }
 
-            new Converter(args[0], args[1], args[2]).Process();
+            new Converter(args[0], args[1], args[2], args.Length > 3 && args.Contains("--verbose")).Process();
         }
     }
 }
