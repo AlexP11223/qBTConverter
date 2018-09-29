@@ -4,6 +4,8 @@ For example, useful when moving to different PC/OS, especially from Windows to L
 
 Initially created by grasmanek94 https://qbforums.shiki.hu/index.php?topic=3925.0
 
+You can build it from the source code as described in the next section or download .exe in Releases https://github.com/AlexP11223/qBTConverter/releases
+
 # Building
 
 Can be build using any modern Visual Studio with C#/.NET 4.0, such as VS 2017 Community (free). Probably works on Mono too, but not tested.
