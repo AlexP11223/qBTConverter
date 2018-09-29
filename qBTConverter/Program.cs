@@ -5,9 +5,79 @@ using System.Text;
 
 namespace qBTConverter
 {
-    class Program
+    class Converter
     {
-        static bool Match(ref byte[] data, ref byte[] search, int dataIndex)
+        private readonly string _path;
+        private readonly string _sourceBasePath;
+        private readonly string _destBasePath;
+
+        public Converter(string path, string sourceBasePath, string destBasePath)
+        {
+            _path = path.TrimEnd('\\', '/');
+            _sourceBasePath = sourceBasePath.TrimEnd('\\', '/');
+            _destBasePath = destBasePath.TrimEnd('\\', '/');
+        }
+
+        // :qBt-savePath<len>:<len chars>
+        // :save_path<len>:<len chars>
+
+        public void Process()
+        {
+            Console.WriteLine("Using path \"" + _path + "\"");
+            Console.WriteLine("Search \"" + _sourceBasePath + "\"");
+            Console.WriteLine("Replace \"" + _destBasePath + "\" & \\ -> /");
+
+            string[] files = Directory.GetFiles(_path, "*.fastresume", SearchOption.TopDirectoryOnly);
+
+            if (files.Length < 1)
+            {
+                Console.WriteLine("No .fastresume files found in path");
+                return;
+            }
+
+            Console.WriteLine("Found " + files.Length + " fastresume files");
+
+            string outpath = _path + "/out";
+
+            Directory.CreateDirectory(outpath);
+            Console.WriteLine("Outputting results to \"" + outpath + "\"");
+
+            int filesUpdated = 0;
+            int totalOccurences = 0;
+            foreach (string file in files)
+            {
+                Console.WriteLine("Processing \"" + file + "\"...");
+
+                byte[] data = File.ReadAllBytes(file);
+
+                string outFile = outpath + "/" + Path.GetFileName(file);
+
+                Console.WriteLine("\tSaving results to \"" + outFile + "\"...");
+
+                int occurencesReplaced = 0;
+                while (Replace(ref data, ":qBt-savePath", _sourceBasePath, _destBasePath))
+                {
+                    ++occurencesReplaced;
+                }
+
+                while (Replace(ref data, ":save_path", _sourceBasePath, _destBasePath))
+                {
+                    ++occurencesReplaced;
+                }
+
+                if (occurencesReplaced > 0)
+                {
+                    File.WriteAllBytes(outFile, data);
+                    ++filesUpdated;
+                    totalOccurences += occurencesReplaced;
+                    Console.WriteLine("\tDone, replaced " + occurencesReplaced + " occurences");
+                }
+            }
+
+            Console.WriteLine("Updated " + filesUpdated + " files and " + totalOccurences + " total occurences");
+        }
+
+        private bool Match(ref byte[] data, ref byte[] search, int dataIndex)
         {
             if (data.Length <= dataIndex + search.Length)
             {
@@ -25,7 +95,7 @@ namespace qBTConverter
             return true;
         }
 
-        static int Position(ref byte[] data, string findWhat, int startPos = 0)
+        private int Position(ref byte[] data, string findWhat, int startPos = 0)
         {
             byte[] search = Encoding.UTF8.GetBytes(findWhat);
 
@@ -39,7 +109,7 @@ namespace qBTConverter
             return -1;
         }
 
-        static byte[] Extract(ref byte[] data, int start, int end)
+        private byte[] Extract(ref byte[] data, int start, int end)
         {
             int size = end - start;
             if (size < 0)
@@ -55,7 +125,7 @@ namespace qBTConverter
             return buffer;
         }
 
-        public static byte[] Combine(byte[] first, byte[] second, byte[] third)
+        private static byte[] Combine(byte[] first, byte[] second, byte[] third)
         {
             byte[] ret = new byte[first.Length + second.Length + third.Length];
             Buffer.BlockCopy(first, 0, ret, 0, first.Length);
@@ -64,7 +134,7 @@ namespace qBTConverter
             return ret;
         }
 
-        static byte[] ReplaceBytes(ref byte[] data, int from, int to, byte[] with)
+        private byte[] ReplaceBytes(ref byte[] data, int from, int to, byte[] with)
         {
             byte[] first = data.Take(from).ToArray();
             byte[] second = data.Skip(to).Take(data.Length - to).ToArray();
@@ -72,7 +142,7 @@ namespace qBTConverter
             return Combine(first, with, second);
         }
 
-        static bool Replace(ref byte[] data, string which, string location, string replace)
+        private bool Replace(ref byte[] data, string which, string location, string replace)
         {
             int posA = Position(ref data, which);
             if (posA == -1)
@@ -101,9 +171,11 @@ namespace qBTConverter
             data = ReplaceBytes(ref data, posB, posC + len + 1, rPath);
             return true;
         }
+    }
 
-        // :qBt-savePath<len>:<len chars>
-        // :save_path<len>:<len chars>
+    class Program
+    {
+
         static void Main(string[] args)
         {
             if (args.Length < 3)
@@ -112,61 +184,7 @@ namespace qBTConverter
                 return;
             }
 
-            if (args[0][args[0].Length - 1] == '\\')
-            {
-                args[0].Remove(args[0].Length - 1);
-            }
-
-            Console.WriteLine("Using path \"" + args[0] + "\"");
-            Console.WriteLine("Search \"" + args[1] + "\"");
-            Console.WriteLine("Replace \"" + args[2] + "\" & \\ -> /");
-
-            string[] files =
-                Directory.GetFiles(args[0], "*.fastresume", SearchOption.TopDirectoryOnly);
-
-            if (files.Length < 1)
-            {
-                Console.WriteLine("No .fastresume files found in path");
-                return;
-            }
-
-            Console.WriteLine("Found " + files.Length + " fastresume files");
-
-            string outpath = args[0] + "\\out";
-
-            Directory.CreateDirectory(outpath);
-            Console.WriteLine("Outputting results to \"" + outpath + "\"");
-
-            int filesUpdated = 0;
-            int totalOccurences = 0;
-            foreach (string file in files)
-            {
-                Console.WriteLine("Processing \"" + file + "\"...");
-                byte[] data = File.ReadAllBytes(file);
-                string outFile = file.Replace(args[0], outpath);
-                Console.WriteLine("\tSaving results to \"" + outFile + "\"...");
-
-                int occurencesReplaced = 0;
-                while (Replace(ref data, ":qBt-savePath", args[1], args[2]))
-                {
-                    ++occurencesReplaced;
-                }
-
-                while (Replace(ref data, ":save_path", args[1], args[2]))
-                {
-                    ++occurencesReplaced;
-                }
-
-                if (occurencesReplaced > 0)
-                {
-                    File.WriteAllBytes(outFile, data);
-                    ++filesUpdated;
-                    totalOccurences += occurencesReplaced;
-                    Console.WriteLine("\tDone, replaced " + occurencesReplaced + " occurences");
-                }
-            }
-
-            Console.WriteLine("Updated " + filesUpdated + " files and " + totalOccurences + " total occurences");
+            new Converter(args[0], args[1], args[2]).Process();
         }
     }
 }
