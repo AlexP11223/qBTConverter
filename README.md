@@ -1,6 +1,6 @@
 # qBTConverter
 Tool for replacing paths in qBittorent `.fastresume` files.
-For example, useful when moving to different PC/OS, especially from Windows to Linux/MacOS because they don't have letter drive paths;
+For example, useful when moving to different PC or OS, especially from Windows to Linux/MacOS because they don't have drive letter paths.
 
 Initially created by grasmanek94 https://qbforums.shiki.hu/index.php?topic=3925.0
 
@@ -29,8 +29,8 @@ It does not modify the original files, the results will be in `/out` subfolder o
 
 ## Notes for Windows to Linux qBittorent migration
 
-- Re-create all your categories you have on Windows, on the Linux qBittorrent client.
-- Shutdown qbt on all your machines (both windows and linux).
+- Re-create all your categories in the Linux qBittorrent client.
+- Shutdown qBittorent on all your machines (both Windows and Linux).
 - Transfer all torrent DATA FILES and KEEP THE SAME FILE STRUCTURE (from windows to linux).
 - Copy all torrent files from `C:\Users\<your user>\AppData\Local\qBittorrent\BT_backup` to `/home/<your linux qbittorrent user>/.local/share/data/qBittorrent/BT_backup`.
-- Run this tool as described above and move everything from `C:\Users\<your user>\AppData\Local\qBittorrent\BT_backup\out` to /`home/<your linux qbittorrent user>/.local/share/data/qBittorrent/BT_backup`.
+- Run this tool as described above and move everything from `C:\Users\<your user>\AppData\Local\qBittorrent\BT_backup\out` to `/home/<your linux qbittorrent user>/.local/share/data/qBittorrent/BT_backup`.
