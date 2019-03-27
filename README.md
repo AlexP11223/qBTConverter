@@ -16,12 +16,12 @@ Simply open the `.sln` file and Build Solution.
 
 Open a command prompt in the folder with the .exe and run: 
 
-    qBTConvert <qBittorent BT_backup dir> <your windows download directory> <your linux download directory>
+    qBTConverter <qBittorent BT_backup dir> <your windows download directory> <your linux download directory>
     
 Examples:
 
-    qBTConvert C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup V:\downloads /data/torrents/downloads
-    qBTConvert C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup U:\downloads /data/torrents/downloads
+    qBTConverter C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup V:\downloads /data/torrents/downloads
+    qBTConverter C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup U:\downloads /data/torrents/downloads
     
 You can also add `--verbose` at the end to see list of skipped files.
 
