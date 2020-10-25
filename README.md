@@ -20,8 +20,8 @@ Open a command prompt in the folder with the .exe and run:
     
 Examples:
 
-    qBTConverter C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup V:\downloads /data/torrents/downloads
-    qBTConverter C:\Users\grasmanek94\AppData\Local\qBittorrent\BT_backup U:\downloads /data/torrents/downloads
+    qBTConverter "C:\Users\MyUser\AppData\Local\qBittorrent\BT_backup" "V:\downloads" "/data/torrents/downloads"
+    qBTConverter "C:\Users\MyUser\AppData\Local\qBittorrent\BT_backup" "U:\downloads" "/data/torrents/downloads"
     
 You can also add `--verbose` at the end to see list of skipped files.
 
